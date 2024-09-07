@@ -32,3 +32,14 @@ steps:
 
 - script: gulp package-solution --ship
   displayName: 'gulp package-solution'
+
+- task: CopyFiles@2
+  inputs:
+    contents: '**/*.sppkg'
+    TargetFolder: '$(Build.ArtifactStagingDirectory)/spfx-targeted-script-editor'
+
+- task: PublishBuildArtifacts@1
+  inputs:
+   PathtoPublish: '$(Build.ArtifactStagingDirectory)/spfx-targeted-script-editor'
+   ArtifactName: 'spfx-targeted-script-editor'
+    
