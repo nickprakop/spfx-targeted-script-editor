@@ -61,51 +61,55 @@ stages:
        runOnce:
          deploy:
           steps:
-            - task: PowerShell@2
-              continueOnError: false
-              inputs:
-                pwsh: true
-                targetType: 'inline'
-                script: |
-                  # Install the PnP PowerShell module
-                  Install-Module -Name PnP.PowerShell -Force -AllowClobber -Scope CurrentUser
-                  # Connect to SharePoint Online using App-Only authentication
-                  $securePassword = ConvertTo-SecureString -String $(appSecret) -AsPlainText -Force
-                  Connect-PnPOnline -Url $(siteUrl) -ClientId $(appId) -Tenant $(tenantId) -ClientSecret $securePassword
-
-                  $app = Get-PnPApp -Scope Site | Where { $_.Title -eq '$(packageName)'' }
+           - task: AzurePowerShell@5
+             displayName: 'Deploy SPFx solution to SharePoint Online'
+             inputs:
+              azureSubscription: "AzureDevops2"
+              azurePowerShellVersion: latestVersion
+              ScriptType: InlineScript
+              Inline: |
+                Set-PnPTraceLog -On -LogFile $(logFile) -Level Debug
+                $azContext = (Get-AzContext).Account.Id
+                $sp = Get-AzADServicePrincipal -ApplicationId $azContext
+                Write-Host "##[debug] ServicePrincipal: $($sp.Id)"
+                Write-Host "##[endgroup]"
+                $url = "https://$(tenantName).sharepoint.com"
+                $path="$(Build.SourcesDirectory)/PnpSiteTemplate/$(scriptName)"
+                try {
+                    $azAccessToken = Get-AzAccessToken -ResourceUrl $url
+                    Connect-PnPOnline -Url "$url/sites/$(siteName)" -AccessToken $azAccessToken.Token               
+                     $app = Get-PnPApp -Scope Site | Where { $_.Title -eq '$(packageName)'' }
                   #if app has not been installed so far -> install it
-                  if (!$app) {
-                      #add app to the app catalog
-                      $app = Add-PnPApp -Path $(Build.ArtifactStagingDirectory)/$(packageName)/$(packageName).sppkg -Scope Site   
-                      #publish app in the app catalog
-                      Publish-PnPApp -Identity $app.Id -Scope Site
-                      #install app on the site
-                      Install-PnPApp -Identity $app.Id -Scope Site -Wait
+                    if (!$app) {
+                        #add app to the app catalog
+                        $app = Add-PnPApp -Path $(Build.ArtifactStagingDirectory)/$(packageName)/$(packageName).sppkg -Scope Site   
+                        #publish app in the app catalog
+                        Publish-PnPApp -Identity $app.Id -Scope Site
+                        #install app on the site
+                        Install-PnPApp -Identity $app.Id -Scope Site -Wait
 
-                      Write-Host "$($app.Title) has been successfully installed"
+                        Write-Host "$($app.Title) has been successfully installed"
 
-                  }
-                  else {
-                      #if app has been already added to app catalog uninstall and install it again
-                      Uninstall-PnPApp -Identity $app.Id -Scope Site  
-                      #and dump wait untill app is uninstalled -> no other working way to check it?   
-                      sleep -Seconds 10   
-                      #remove app from the app catalog  
-                      Remove-PnPApp -Identity $app.Id -Scope Site
-                      #add app to the app catalog
-                      $app = Add-PnPApp -Path $(Build.ArtifactStagingDirectory)/$(packageName)/$(packageName).sppkg -Scope Site  
-                      #publish app in the app catalog
-                      Publish-PnPApp -Identity $app.Id -Scope Site
-                      #install app on the site and wait for the process to be finished
-                      Install-PnPApp -Identity $app.Id -Scope Site -Wait
-                      #Update-PnPApp -Identity $app.Id -Scope Site 
+                    }
+                    else {
+                        #if app has been already added to app catalog uninstall and install it again
+                        Uninstall-PnPApp -Identity $app.Id -Scope Site  
+                        #and dump wait untill app is uninstalled -> no other working way to check it?   
+                        sleep -Seconds 10   
+                        #remove app from the app catalog  
+                        Remove-PnPApp -Identity $app.Id -Scope Site
+                        #add app to the app catalog
+                        $app = Add-PnPApp -Path $(Build.ArtifactStagingDirectory)/$(packageName)/$(packageName).sppkg -Scope Site  
+                        #publish app in the app catalog
+                        Publish-PnPApp -Identity $app.Id -Scope Site
+                        #install app on the site and wait for the process to be finished
+                        Install-PnPApp -Identity $app.Id -Scope Site -Wait
+                        #Update-PnPApp -Identity $app.Id -Scope Site 
 
-                      Write-Host "$($app.Title) has been successfully re-installed"
-                  }
-                  # # Upload the .sppkg file to the App Catalog
-                  # Add-PnPApp -Path $(Build.ArtifactStagingDirectory)/$(packageName)/$(packageName).sppkg -Overwrite
-                  # # Deploy the app in the App Catalog
-                  # Install-PnPApp -Identity (Get-PnPApp -Scope Tenant -AppId $(packageName).sppkg) -Scope Tenant
-              displayName: 'Deploy SPFx solution to SharePoint Online'
+                        Write-Host "$($app.Title) has been successfully re-installed"
+                    } 
+                }
+                catch {
+                        Write-Host "##[error]$($_.Exception.ToString())"
+                }
                   
