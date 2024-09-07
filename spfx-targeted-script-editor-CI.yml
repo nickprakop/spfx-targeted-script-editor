@@ -54,23 +54,28 @@ stages:
     variables:
     - group: 'Develop environment'
     jobs:
-      - job:
-        steps:
-         - task: PowerShell@2
-           continueOnError: false
-           inputs:
-            pwsh: true
-            targetType: 'inline'
-            script: |
-              # Install the PnP PowerShell module
-              Install-Module -Name PnP.PowerShell -Force -AllowClobber -Scope CurrentUser
-              # Connect to SharePoint Online using App-Only authentication
-              $securePassword = ConvertTo-SecureString -String $env:SPO_CLIENT_SECRET -AsPlainText -Force
-              Connect-PnPOnline -Url $env:SPO_SITE_URL -ClientId $env:SPO_CLIENT_ID -Tenant $env:SPO_TENANT_ID -ClientSecret $securePassword
+    - deployment: 
+      displayName: 'Deployment job'
+      environment: 'Development'
+      strategy:
+       runOnce:
+         deploy:
+          steps:
+            - task: PowerShell@2
+              continueOnError: false
+              inputs:
+                pwsh: true
+                targetType: 'inline'
+                script: |
+                  # Install the PnP PowerShell module
+                  Install-Module -Name PnP.PowerShell -Force -AllowClobber -Scope CurrentUser
+                  # Connect to SharePoint Online using App-Only authentication
+                  $securePassword = ConvertTo-SecureString -String $env:SPO_CLIENT_SECRET -AsPlainText -Force
+                  Connect-PnPOnline -Url $env:SPO_SITE_URL -ClientId $env:SPO_CLIENT_ID -Tenant $env:SPO_TENANT_ID -ClientSecret $securePassword
 
-              # Upload the .sppkg file to the App Catalog
-              Add-PnPApp -Path ./sharepoint/solution/your-solution.sppkg -Overwrite
-              # Deploy the app in the App Catalog
-              Install-PnPApp -Identity (Get-PnPApp -Scope Tenant -AppId "your-sppkg-app-id") -Scope Tenant
-           displayName: 'Deploy SPFx solution to SharePoint Online'
-              
+                  # Upload the .sppkg file to the App Catalog
+                  Add-PnPApp -Path ./sharepoint/solution/your-solution.sppkg -Overwrite
+                  # Deploy the app in the App Catalog
+                  Install-PnPApp -Identity (Get-PnPApp -Scope Tenant -AppId "your-sppkg-app-id") -Scope Tenant
+              displayName: 'Deploy SPFx solution to SharePoint Online'
+                  
