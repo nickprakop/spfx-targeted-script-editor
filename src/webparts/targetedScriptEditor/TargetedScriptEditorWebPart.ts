@@ -24,9 +24,6 @@ export interface ITargetedScriptEditorWebPartState {
 }
 
 export default class TargetedScriptEditorWebPart extends BaseClientSideWebPart<ITargetedScriptEditorWebPartProps> {
-  // public _scriptBodyEditorPanel;
-  // public _spPeoplePicker;
-
   public _unqiueId;
   editorProp: any;
   peoplePicker: any;
