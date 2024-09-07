@@ -37,6 +37,7 @@ steps:
   inputs:
     contents: '**/*.sppkg'
     TargetFolder: '$(Build.ArtifactStagingDirectory)/spfx-targeted-script-editor'
+    flattenFolders: true
 
 - task: PublishBuildArtifacts@1
   inputs:
