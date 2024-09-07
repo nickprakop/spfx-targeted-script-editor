@@ -51,11 +51,10 @@ stages:
   - stage: Deploy
     displayName: 'Release to Dev site'
     condition: succeeded('Build')
+    variables:
+    - group: 'Develop environment'
     jobs:
       - job:
-        pool:
-          vmImage: ubuntu-latest
-        
         steps:
          - task: PowerShell@2
            continueOnError: false
