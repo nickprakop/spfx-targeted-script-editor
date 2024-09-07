@@ -61,14 +61,20 @@ stages:
        runOnce:
          deploy:
           steps:
-           - task: AzurePowerShell@5
-             displayName: 'Deploy SPFx solution to SharePoint Online'
-             inputs:
-              azureSubscription: "AzureDevops2"
-              azurePowerShellVersion: latestVersion
-              ScriptType: InlineScript
-              Inline: |       
-                Install-Module PnP.PowerShell -Scope "CurrentUser" -Verbose -AllowClobber -Force
+          - powershell: |
+              Write-Host "##[group]Install/Import  PS modules"
+              Install-Module PnP.PowerShell -Scope "CurrentUser" -Verbose -AllowClobber -Force            
+            errorActionPreference: continue
+            displayName: "Install/Import  PS modules"
+            continueOnError: false
+          - task: AzurePowerShell@5
+            displayName: 'Deploy SPFx solution to SharePoint Online'
+            inputs:
+             azureSubscription: "AzureDevops2"
+             azurePowerShellVersion: latestVersion
+             ScriptType: InlineScript
+             Inline: |       
+                
                 $azContext = (Get-AzContext).Account.Id
                 $sp = Get-AzADServicePrincipal -ApplicationId $azContext                
                 $url = "https://ysb26.sharepoint.com"
