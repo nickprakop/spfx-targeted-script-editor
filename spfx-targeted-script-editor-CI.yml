@@ -17,40 +17,40 @@ variables:
   packageName: 'spfx-targeted-script-editor'
  
 stages:
-  # - stage: Build
-  #   jobs:
-  #     - job:
-  #       pool:
-  #         vmImage: ubuntu-latest
+  - stage: Build
+    jobs:
+      - job:
+        pool:
+          vmImage: ubuntu-latest
 
-  #       steps:
-  #       - task: NodeTool@0
-  #         inputs:
-  #           versionSpec: '18.x'
-  #         displayName: 'Install Node.js'
+        steps:
+        - task: NodeTool@0
+          inputs:
+            versionSpec: '18.x'
+          displayName: 'Install Node.js'
 
-  #       - script: npm install    
-  #         displayName: 'npm install'
+        - script: npm install    
+          displayName: 'npm install'
 
-  #       - script: gulp bundle --ship
-  #         displayName: 'gulp bundle'
+        - script: gulp bundle --ship
+          displayName: 'gulp bundle'
 
-  #       - script: gulp package-solution --ship
-  #         displayName: 'gulp package-solution'
+        - script: gulp package-solution --ship
+          displayName: 'gulp package-solution'
 
-  #       - task: CopyFiles@2
-  #         inputs:
-  #           contents: '**/*.sppkg'
-  #           TargetFolder: '$(Build.ArtifactStagingDirectory)/$(packageName)'
-  #           flattenFolders: true
-  #       - task: PublishBuildArtifacts@1
-  #         inputs:
-  #          PathtoPublish: '$(Build.ArtifactStagingDirectory)/$(packageName)'
-  #          ArtifactName: $(packageName)
+        - task: CopyFiles@2
+          inputs:
+            contents: '**/*.sppkg'
+            TargetFolder: '$(Build.ArtifactStagingDirectory)/$(packageName)'
+            flattenFolders: true
+        - task: PublishBuildArtifacts@1
+          inputs:
+           PathtoPublish: '$(Build.ArtifactStagingDirectory)/$(packageName)'
+           ArtifactName: $(packageName)
 
   - stage: Deploy
     displayName: 'Release to Dev site'
-    # condition: succeeded('Build')
+    condition: succeeded('Build')
     variables:
     - group: 'Develop environment'
     jobs:
