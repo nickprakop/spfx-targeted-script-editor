@@ -78,7 +78,7 @@ stages:
                 try {
                     $azAccessToken = Get-AzAccessToken -ResourceUrl $url
                     Connect-PnPOnline -Url "$url/sites/$(siteName)" -AccessToken $azAccessToken.Token               
-                     $app = Get-PnPApp -Scope Site | Where { $_.Title -eq '$(packageName)'' }
+                     $app = Get-PnPApp -Scope Site | Where { $_.Title -eq '$(packageName)' }
                   #if app has not been installed so far -> install it
                     if (!$app) {
                         #add app to the app catalog
