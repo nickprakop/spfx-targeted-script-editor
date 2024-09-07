@@ -43,10 +43,10 @@ stages:
             contents: '**/*.sppkg'
             TargetFolder: '$(Build.ArtifactStagingDirectory)/$(packageName)'
             flattenFolders: true
-        - task: PublishBuildArtifacts@1
-          inputs:
-           PathtoPublish: '$(Build.ArtifactStagingDirectory)/$(packageName)'
-           ArtifactName: $(packageName)
+        # - task: PublishBuildArtifacts@1
+        #   inputs:
+        #    PathtoPublish: '$(Build.ArtifactStagingDirectory)/$(packageName)'
+        #    ArtifactName: $(packageName)
 
   - stage: Deploy
     displayName: 'Release to Dev site'
