@@ -49,6 +49,8 @@ stages:
            ArtifactName: $(packageName)
 
   - stage: Deploy
+    displayName: 'Release to Dev site'
+    condition: succeeded('Build')
     jobs:
       - job:
         pool:
@@ -59,46 +61,17 @@ stages:
            continueOnError: false
            inputs:
             pwsh: true
-        targetType: 'inline'
-        script: |
-          $tenant = "$(Tenant)"
-          $tenantAdminURL = "$env:TenantAdminURL"
-          $powershellPath = "$env:PowerShellPath"
-          $pnpPowershell = "$env:Tools_PnP_PowerShell"
-          $certbase = "$env:CERTBASE64ENCODED"
-          $clientId = "$(ClientId)"
-          $packagePath = "${{ parameters.packagePath }}"
-          $siteURLs = "$env:SiteCollectionURLs"
+            targetType: 'inline'
+            script: |
+              # Install the PnP PowerShell module
+              Install-Module -Name PnP.PowerShell -Force -AllowClobber -Scope CurrentUser
+              # Connect to SharePoint Online using App-Only authentication
+              $securePassword = ConvertTo-SecureString -String $env:SPO_CLIENT_SECRET -AsPlainText -Force
+              Connect-PnPOnline -Url $env:SPO_SITE_URL -ClientId $env:SPO_CLIENT_ID -Tenant $env:SPO_TENANT_ID -ClientSecret $securePassword
 
-          #Write-Host "Args: $($tenant), $($tenantAdminURL), $($powershellPath), $($pnpPowershell), $($certbase), $($clientId), $($packagePath)";
-          
-          . "$powershellPath\_helpers.ps1"
-
-          Write-Host "Loading PnP module"
-          Import-Module "$pnpPowershell\PnP.PowerShell.psd1" -DisableNameChecking
-          
-          $connArgs = Get-SiteConnectionArguments `
-          -ClientId $clientId `
-          -CertificateBase64Encoded $certbase `
-          -Tenant $tenant
-
-          foreach ($siteURL in $siteURLs) {
-            try {
-              $siteConnection = Get-SiteConnection -SiteUrl $siteURL @connArgs
-              
-              . "$powershellPath\Deploy-SPFxComponents.ps1" `
-              -Connection $siteConnection `
-              -PackagePath $packagePath `
-              -AppScope "Site"
-            }
-            catch {
-              Write-Host "An error occurred: " -ForegroundColor Red -NoNewline;
-              Write-Host $_ -ForegroundColor Red;
-              Continue
-            }
-          }
-        showWarnings: true
-      env:
-          CERTBASE64ENCODED: $(CertBase64Encoded)
-      displayName: "Add package to Site Collection catalog"
+              # Upload the .sppkg file to the App Catalog
+              Add-PnPApp -Path ./sharepoint/solution/your-solution.sppkg -Overwrite
+              # Deploy the app in the App Catalog
+              Install-PnPApp -Identity (Get-PnPApp -Scope Tenant -AppId "your-sppkg-app-id") -Scope Tenant
+           displayName: 'Deploy SPFx solution to SharePoint Online'
               
