@@ -71,7 +71,7 @@ stages:
                 $azContext = (Get-AzContext).Account.Id
                 $sp = Get-AzADServicePrincipal -ApplicationId $azContext                
                 $url = "https://ysb26.sharepoint.com"
-                $path="$(Build.SourcesDirectory)/PnpSiteTemplate/$(scriptName)"
+               
                 try {
                     $azAccessToken = Get-AzAccessToken -ResourceUrl $url
                     Connect-PnPOnline -Url "$url/sites/$(siteName)" -AccessToken $azAccessToken.Token               
