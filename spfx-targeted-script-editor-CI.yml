@@ -68,6 +68,7 @@ stages:
               azurePowerShellVersion: latestVersion
               ScriptType: InlineScript
               Inline: |       
+                Install-Module PnP.PowerShell -Scope "CurrentUser" -Verbose -AllowClobber -Force
                 $azContext = (Get-AzContext).Account.Id
                 $sp = Get-AzADServicePrincipal -ApplicationId $azContext                
                 $url = "https://ysb26.sharepoint.com"
