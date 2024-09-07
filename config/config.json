@@ -1,0 +1,20 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/spfx-build/config.2.0.schema.json",
+  "version": "2.0",
+  "bundles": {
+    "targeted-script-editor-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/targetedScriptEditor/TargetedScriptEditorWebPart.js",
+          "manifest": "./src/webparts/targetedScriptEditor/TargetedScriptEditorWebPart.manifest.json"
+        }
+      ]
+    }
+  },
+  "externals": {},
+  "localizedResources": {
+    "TargetedScriptEditorWebPartStrings": "lib/webparts/targetedScriptEditor/loc/{locale}.js",
+    "ControlStrings": "node_modules/@pnp/spfx-controls-react/lib/loc/{locale}.js",
+    "PropertyControlStrings": "node_modules/@pnp/spfx-property-controls/lib/loc/{locale}.js"
+  }
+}

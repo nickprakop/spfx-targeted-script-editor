@@ -1,0 +1,40 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/spfx-build/package-solution.schema.json",
+  "solution": {
+    "name": "spfx-targeted-script-editor",
+    "id": "a7b64160-8941-4ba5-a995-a702533315d3",
+    "version": "1.0.0.0",
+    "includeClientSideAssets": true,
+    "skipFeatureDeployment": true,
+    "isDomainIsolated": false,
+    "developer": {
+      "name": "",
+      "websiteUrl": "",
+      "privacyUrl": "",
+      "termsOfUseUrl": "",
+      "mpnId": "Undefined-1.18.2"
+    },
+    "metadata": {
+      "shortDescription": {
+        "default": "spfx-targeted-script-editor description"
+      },
+      "longDescription": {
+        "default": "spfx-targeted-script-editor description"
+      },
+      "screenshotPaths": [],
+      "videoUrl": "",
+      "categories": []
+    },
+    "features": [
+      {
+        "title": "spfx-targeted-script-editor Feature",
+        "description": "The feature that activates elements of the spfx-targeted-script-editor solution.",
+        "id": "1cb67ef5-8c60-41e7-8587-82224843323f",
+        "version": "1.0.0.0"
+      }
+    ]
+  },
+  "paths": {
+    "zippedPackage": "solution/spfx-targeted-script-editor.sppkg"
+  }
+}
