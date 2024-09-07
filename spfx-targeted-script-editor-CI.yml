@@ -67,12 +67,9 @@ stages:
               azureSubscription: "AzureDevops2"
               azurePowerShellVersion: latestVersion
               ScriptType: InlineScript
-              Inline: |
-                Set-PnPTraceLog -On -LogFile $(logFile) -Level Debug
+              Inline: |       
                 $azContext = (Get-AzContext).Account.Id
-                $sp = Get-AzADServicePrincipal -ApplicationId $azContext
-                Write-Host "##[debug] ServicePrincipal: $($sp.Id)"
-                Write-Host "##[endgroup]"
+                $sp = Get-AzADServicePrincipal -ApplicationId $azContext                
                 $url = "https://$(tenantName).sharepoint.com"
                 $path="$(Build.SourcesDirectory)/PnpSiteTemplate/$(scriptName)"
                 try {
