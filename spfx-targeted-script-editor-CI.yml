@@ -50,7 +50,7 @@ stages:
 
   - stage: Deploy
     displayName: 'Release to Dev site'
-    condition: succeeded('Build')
+    # condition: succeeded('Build')
     variables:
     - group: 'Develop environment'
     jobs:
