@@ -19,6 +19,7 @@ export interface ITargetedScriptEditorWebPartProps {
   removePadding: boolean
 }
 
+
 export interface ITargetedScriptEditorWebPartState {
   exucuteScript: boolean;
 }
