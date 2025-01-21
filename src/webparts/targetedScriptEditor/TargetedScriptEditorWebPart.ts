@@ -85,10 +85,12 @@ export default class TargetedScriptEditorWebPart extends BaseClientSideWebPart<I
             });
           })).then(val => {
             // eslint-disable-next-line @typescript-eslint/no-floating-promises
+            console.log("Display web part for groups " + this.properties.targetedGroups?.join(','));          
             this.executeScript(this.domElement);
           });
       } else {
         // eslint-disable-next-line @typescript-eslint/no-floating-promises
+        console.log("Display web part when 0 groups ");          
         this.executeScript(this.domElement);
       }
     } else {
